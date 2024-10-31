@@ -20,6 +20,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/url_util.h"
 
+#include "api/qwebengineextensionmanager.h"
 #include "api/qwebengineurlscheme.h"
 #include "content_browser_client_qt.h"
 #include "download_manager_delegate_qt.h"
@@ -122,6 +123,9 @@ ProfileAdapter::ProfileAdapter(const QString &storageName, const QString &dataPa
     m_customUrlSchemeHandlers.insert(QByteArrayLiteral("qrc"), &m_qrcHandler);
     m_cancelableTaskTracker.reset(new base::CancelableTaskTracker());
 
+#if QT_CONFIG(webengine_extensions)
+    m_extensionManager.reset(new QWebEngineExtensionManager(m_profile->extensionManager()));
+#endif
     m_profile->DoFinalInit();
 }
 
@@ -1020,5 +1024,11 @@ void ProfileAdapter::requestIconForIconURL(const QUrl &iconUrl,
                            touchIconsEnabled),
             m_cancelableTaskTracker.get());
 }
+#if QT_CONFIG(webengine_extensions)
+QWebEngineExtensionManager *ProfileAdapter::extensionManager()
+{
+    return m_extensionManager.get();
+}
+#endif
 
 } // namespace QtWebEngineCore

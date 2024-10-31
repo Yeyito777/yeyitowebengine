@@ -7,6 +7,7 @@
 #include "qwebenginecookiestore.h"
 #include "qwebenginedownloadrequest.h"
 #include "qwebenginedownloadrequest_p.h"
+#include "qwebengineextensionmanager.h"
 #include "qwebenginenotification.h"
 #include "qwebenginesettings.h"
 #include "qwebenginescriptcollection.h"
@@ -1092,6 +1093,22 @@ QWebEngineClientHints *QWebEngineProfile::clientHints() const
 {
     Q_D(const QWebEngineProfile);
     return d->m_clientHints.data();
+}
+
+/*!
+    Returns the extension manager associated with this browsing context.
+
+    \since 6.10
+    \sa QWebEngineExtensionManager
+*/
+QWebEngineExtensionManager *QWebEngineProfile::extensionManager()
+{
+#if QT_CONFIG(webengine_extensions)
+    Q_D(QWebEngineProfile);
+    return d->profileAdapter()->extensionManager();
+#else
+    return nullptr;
+#endif
 }
 
 QT_END_NAMESPACE

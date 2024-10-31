@@ -29,6 +29,10 @@
 
 using QtWebEngineCore::ProfileAdapter;
 
+#if QT_CONFIG(webengine_extensions)
+#include <QtWebEngineCore/qwebengineextensionmanager.h>
+#endif
+
 QT_BEGIN_NAMESPACE
 
 /*!
@@ -1168,6 +1172,16 @@ QWebEngineClientHints *QQuickWebEngineProfile::clientHints() const
 {
     Q_D(const QQuickWebEngineProfile);
     return d->m_clientHints.data();
+}
+
+QWebEngineExtensionManager *QQuickWebEngineProfile::extensionManager()
+{
+#if QT_CONFIG(webengine_extensions)
+    Q_D(QQuickWebEngineProfile);
+    return d->profileAdapter()->extensionManager();
+#else
+    return nullptr;
+#endif
 }
 
 /*!

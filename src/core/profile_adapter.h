@@ -26,6 +26,7 @@
 
 #include <QtWebEngineCore/qwebengineclientcertificatestore.h>
 #include <QtWebEngineCore/qwebenginecookiestore.h>
+#include <QtWebEngineCore/qwebengineextensionmanager.h>
 #include <QtWebEngineCore/qwebengineurlrequestinterceptor.h>
 #include <QtWebEngineCore/qwebengineurlschemehandler.h>
 #include <QtWebEngineCore/qwebenginepermission.h>
@@ -202,7 +203,9 @@ public:
     void resetClientHints();
 
     void clearHttpCache();
-
+#if QT_CONFIG(webengine_extensions)
+    QWebEngineExtensionManager *extensionManager();
+#endif
 #if QT_CONFIG(ssl)
     QWebEngineClientCertificateStore *clientCertificateStore();
 #endif
@@ -260,6 +263,9 @@ private:
     int m_httpCacheMaxSize;
     QrcUrlSchemeHandler m_qrcHandler;
     std::unique_ptr<base::CancelableTaskTracker> m_cancelableTaskTracker;
+#if QT_CONFIG(webengine_extensions)
+    std::unique_ptr<QWebEngineExtensionManager> m_extensionManager;
+#endif
 
     Q_DISABLE_COPY(ProfileAdapter)
 };

@@ -38,6 +38,7 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 
+#include "extensions/extension_manager.h"
 #include "extensions/extension_system_qt.h"
 #endif
 
@@ -341,5 +342,13 @@ content::PlatformNotificationService *ProfileQt::GetPlatformNotificationService(
         m_platformNotificationService = std::make_unique<PlatformNotificationServiceQt>(this);
     return m_platformNotificationService.get();
 }
+
+#if QT_CONFIG(webengine_extensions)
+ExtensionManager *ProfileQt::extensionManager()
+{
+    return static_cast<extensions::ExtensionSystemQt *>(extensions::ExtensionSystem::Get(this))
+            ->extensionManager();
+}
+#endif
 
 } // namespace QtWebEngineCore

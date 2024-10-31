@@ -11,13 +11,10 @@
 
 class PrefService;
 
-namespace extensions {
-class ExtensionSystemQt;
-}
-
 namespace QtWebEngineCore {
 
 class BrowsingDataRemoverDelegateQt;
+class ExtensionManager;
 class PermissionManagerQt;
 class ProfileAdapter;
 class ProfileIODataQt;
@@ -77,6 +74,9 @@ public:
 
     void initUserAgentMetadata();
     const blink::UserAgentMetadata &userAgentMetadata();
+#if QT_CONFIG(webengine_extensions)
+    ExtensionManager *extensionManager();
+#endif
 
 private:
     std::unique_ptr<BrowsingDataRemoverDelegateQt> m_removerDelegate;

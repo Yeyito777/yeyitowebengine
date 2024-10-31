@@ -36,6 +36,7 @@ ExtensionSystemFactoryQt::ExtensionSystemFactoryQt()
     DCHECK(ExtensionsBrowserClient::Get()) << "ExtensionSystemFactory must be initialized after BrowserProcess";
     DependsOn(ExtensionPrefsFactory::GetInstance());
     DependsOn(ExtensionRegistryFactory::GetInstance());
+    DependsOn(ProcessManagerFactory::GetInstance());
 }
 
 ExtensionSystemFactoryQt::~ExtensionSystemFactoryQt()

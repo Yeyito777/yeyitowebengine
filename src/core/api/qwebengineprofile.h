@@ -22,6 +22,7 @@ class QWebEngineClientCertificateStore;
 class QWebEngineClientHints;
 class QWebEngineCookieStore;
 class QWebEngineDownloadRequest;
+class QWebEngineExtensionManager;
 class QWebEngineNotification;
 class QWebEngineProfilePrivate;
 class QWebEngineSettings;
@@ -127,6 +128,8 @@ public:
     QList<QWebEnginePermission> listAllPermissions() const;
     QList<QWebEnginePermission> listPermissionsForOrigin(const QUrl &securityOrigin) const;
     QList<QWebEnginePermission> listPermissionsForPermissionType(QWebEnginePermission::PermissionType permissionType) const;
+
+    QWebEngineExtensionManager *extensionManager();
 
     static QWebEngineProfile *defaultProfile();
 

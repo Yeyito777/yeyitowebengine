@@ -17,6 +17,8 @@ qt_internal_add_module(WebEngineCore
         qwebenginecookiestore.cpp qwebenginecookiestore.h qwebenginecookiestore_p.h
         qwebenginedesktopmediarequest.cpp qwebenginedesktopmediarequest.h qwebenginedesktopmediarequest_p.h
         qwebenginedownloadrequest.cpp qwebenginedownloadrequest.h qwebenginedownloadrequest_p.h
+        qwebengineextensioninfo.cpp qwebengineextensioninfo.h qwebengineextensioninfo_p.h
+        qwebengineextensionmanager.cpp qwebengineextensionmanager.h
         qwebenginefilesystemaccessrequest.cpp qwebenginefilesystemaccessrequest.h
         qwebenginefindtextresult.cpp qwebenginefindtextresult.h
         qwebengineframe.cpp qwebengineframe.h

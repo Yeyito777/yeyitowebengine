@@ -276,16 +276,21 @@ foreach(arch ${archs})
                 common/extensions/extensions_api_provider_qt.cpp common/extensions/extensions_api_provider_qt.h
                 common/extensions/extensions_client_qt.cpp common/extensions/extensions_client_qt.h
                 extensions/component_extension_resource_manager_qt.cpp extensions/component_extension_resource_manager_qt.h
+                extensions/extension_action_manager.cpp extensions/extension_action_manager.h
                 extensions/extension_host_delegate_qt.cpp extensions/extension_host_delegate_qt.h
                 extensions/extension_system_factory_qt.cpp extensions/extension_system_factory_qt.h
                 extensions/extension_system_qt.cpp extensions/extension_system_qt.h
                 extensions/extension_web_contents_observer_qt.cpp extensions/extension_web_contents_observer_qt.h
                 extensions/extensions_api_client_qt.cpp extensions/extensions_api_client_qt.h
                 extensions/extensions_browser_client_qt.cpp extensions/extensions_browser_client_qt.h
+                extensions/extension_manager.cpp extensions/extension_manager.h
+                extensions/extension_loader.cpp extensions/extension_loader.h
+                extensions/extension_installer.cpp extensions/extension_installer.h
                 extensions/file_system_delegate_qt.cpp extensions/file_system_delegate_qt.h
                 extensions/messaging_delegate_qt.cpp extensions/messaging_delegate_qt.h
                 extensions/mime_handler_view_guest_delegate_qt.cpp extensions/mime_handler_view_guest_delegate_qt.h
                 extensions/plugin_service_filter_qt.cpp extensions/plugin_service_filter_qt.h
+                extensions/unpacked_extension_installer.h extensions/unpacked_extension_installer.cpp
                 net/plugin_response_interceptor_url_loader_throttle.cpp net/plugin_response_interceptor_url_loader_throttle.h
                 renderer/extensions/extensions_renderer_api_provider_qt.cpp renderer/extensions/extensions_renderer_api_provider_qt.h
                 renderer/extensions/extensions_renderer_client_qt.cpp renderer/extensions/extensions_renderer_client_qt.h

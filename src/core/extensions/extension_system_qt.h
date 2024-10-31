@@ -23,6 +23,10 @@ namespace value_store {
 class ValueStoreFactory;
 }
 
+namespace QtWebEngineCore {
+class ExtensionManager;
+}
+
 namespace extensions {
 
 class ExtensionRegistry;
@@ -73,6 +77,8 @@ public:
 
     void PerformActionBasedOnOmahaAttributes(const std::string &, const base::Value::Dict &) override { /* fixme? */}
 
+    QtWebEngineCore::ExtensionManager *extensionManager();
+
 private:
     void NotifyExtensionLoaded(const Extension *extension);
     void LoadExtension(const base::Value::Dict &manifest, const base::FilePath &directory);
@@ -91,6 +97,7 @@ private:
     ExtensionRegistry *extension_registry_;
     extensions::RendererStartupHelper *renderer_helper_;
     bool initialized_;
+    std::unique_ptr<QtWebEngineCore::ExtensionManager> extension_manager_;
 
     base::WeakPtrFactory<ExtensionSystemQt> weak_ptr_factory_;
 };

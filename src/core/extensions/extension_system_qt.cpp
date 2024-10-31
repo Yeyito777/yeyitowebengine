@@ -7,6 +7,8 @@
 
 #include "extension_system_qt.h"
 
+#include "extension_manager.h"
+
 #include <algorithm>
 
 #include "base/base_paths.h"
@@ -116,6 +118,11 @@ public:
     // Called when ExtensionSystem is shutting down.
     void Shutdown() override {}
 };
+
+QtWebEngineCore::ExtensionManager *ExtensionSystemQt::extensionManager()
+{
+    return extension_manager_.get();
+}
 
 void ExtensionSystemQt::LoadExtension(const base::Value::Dict &manifest, const base::FilePath &directory)
 {
@@ -290,6 +297,7 @@ void ExtensionSystemQt::Init(bool extensions_enabled)
     service_worker_manager_ = std::make_unique<ServiceWorkerManager>(browser_context_);
     user_script_manager_ = std::make_unique<UserScriptManager>(browser_context_);
     quota_service_ = std::make_unique<QuotaService>();
+    extension_manager_ = std::make_unique<QtWebEngineCore::ExtensionManager>(browser_context_);
 
     // Make the chrome://extension-icon/ resource available.
     // content::URLDataSource::Add(browser_context_, new ExtensionIconSource(browser_context_));

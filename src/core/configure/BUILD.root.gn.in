@@ -451,6 +451,10 @@ source_set("qtwebengine_sources") {
       "//chrome/common/extensions/permissions/chrome_permission_message_provider.h",
       "//chrome/common/extensions/permissions/chrome_permission_message_rules.cc",
       "//chrome/common/extensions/permissions/chrome_permission_message_rules.h",
+      "//extensions/browser/zipfile_installer.cc",
+      "//extensions/browser/zipfile_installer.h",
+      "//components/services/unzip/unzipper_impl.cc",
+      "//components/services/unzip/unzipper_impl.h",
     ]
   } else {
     sources += [
