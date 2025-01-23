@@ -48,17 +48,9 @@
 // #include "chrome/browser/ui/webui/certificate_viewer_ui.h"
 // #endif
 
-// #if BUILDFLAG(ENABLE_EXTENSIONS)
-// #include "chrome/browser/extensions/extension_web_ui.h"
-// #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
-// #include "chrome/common/extensions/extension_constants.h"
-// #include "extensions/browser/extension_registry.h"
-// #include "extensions/browser/extension_system.h"
-// #include "extensions/common/constants.h"
-// #include "extensions/common/extension.h"
-// #include "extensions/common/feature_switch.h"
-// #include "extensions/common/manifest.h"
-// #endif
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/webui/extensions_ui_qt.h"
+#endif
 
 using content::WebUI;
 using content::WebUIController;
@@ -117,10 +109,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI *web_ui, Profile *profile, co
 //    if (url.host_piece() == chrome::kChromeUICertificateViewerHost)
 //        return &NewWebUI<CertificateViewerUI>;
 //#endif  // USE_NSS_CERTS && USE_AURA
-//#if BUILDFLAG(ENABLE_EXTENSIONS)
-//    if (url.host_piece() == chrome::kChromeUIExtensionsFrameHost)
-//        return &NewWebUI<extensions::ExtensionsUI>;
-//#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    if (url.host_piece() == chrome::kChromeUIExtensionsHost)
+        return &NewWebUI<ExtensionsUIQt>;
+#endif
 //#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 //    if (url.host_piece() == chrome::kChromeUIPrintHost &&
 //        !profile->GetPrefs()->GetBoolean(prefs::kPrintPreviewDisabled)) {

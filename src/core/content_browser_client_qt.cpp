@@ -112,6 +112,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "content/public/browser/web_ui_controller_interface_binder.h"
 #include "common/extensions/extensions_client_qt.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
@@ -130,6 +131,8 @@
 #include "extensions/extension_web_contents_observer_qt.h"
 #include "extensions/extensions_browser_client_qt.h"
 #include "net/plugin_response_interceptor_url_loader_throttle.h"
+#include "extensions/webui/extensions_ui_page_handler_qt.h"
+#include "extensions/webui/extensions_ui_qt.h"
 #endif
 
 #if QT_CONFIG(webengine_webchannel)
@@ -450,6 +453,9 @@ void ContentBrowserClientQt::RegisterBrowserInterfaceBindersForFrame(
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+    RegisterWebUIControllerInterfaceBinder<qtwebengine::mojom::ExtensionsUIHandlerFactory,
+                                           ExtensionsUIQt>(map);
+
     map->Add<extensions::mime_handler::MimeHandlerService>(base::BindRepeating(&BindMimeHandlerService));
     map->Add<extensions::mime_handler::BeforeUnloadControl>(base::BindRepeating(&BindBeforeUnloadControl));
     const GURL &site = render_frame_host->GetSiteInstance()->GetSiteURL();

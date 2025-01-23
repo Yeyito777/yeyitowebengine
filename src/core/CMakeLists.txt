@@ -295,6 +295,9 @@ foreach(arch ${archs})
                 renderer/extensions/extensions_renderer_api_provider_qt.cpp renderer/extensions/extensions_renderer_api_provider_qt.h
                 renderer/extensions/extensions_renderer_client_qt.cpp renderer/extensions/extensions_renderer_client_qt.h
                 renderer/extensions/resource_request_policy_qt.cpp renderer/extensions/resource_request_policy_qt.h
+                extensions/webui/extensions_ui_page_handler_qt.cpp extensions/webui/extensions_ui_page_handler_qt.h
+                extensions/webui/extensions_ui_qt.cpp extensions/webui/extensions_ui_qt.h
+                extensions/webui/select_file_dialog.cpp extensions/webui/select_file_dialog.h
         )
 
         extend_gn_target(${buildGn} CONDITION QT_FEATURE_webengine_extensions AND QT_FEATURE_webengine_printing_and_pdf

@@ -439,6 +439,8 @@ source_set("qtwebengine_sources") {
       "//extensions/strings",
       "//qtwebengine/browser/extensions/api:api_registration",
       "//qtwebengine/common/extensions/api:api",
+      "//qtwebengine/browser/extensions/webui:mojo_bindings",
+      "//qtwebengine/browser/extensions/resources",
     ]
     sources += [
       "//chrome/browser/extensions/api/streams_private/streams_private_api.cc",
@@ -455,6 +457,8 @@ source_set("qtwebengine_sources") {
       "//extensions/browser/zipfile_installer.h",
       "//components/services/unzip/unzipper_impl.cc",
       "//components/services/unzip/unzipper_impl.h",
+      "//ui/webui/mojo_web_ui_controller.cc",
+      "//ui/webui/mojo_web_ui_controller.h",
     ]
   } else {
     sources += [
@@ -656,6 +660,7 @@ repack("qtwebengine_repack_resources") {
   ]
   if (enable_extensions) {
     sources += [
+      "$root_gen_dir/qtwebengine/browser/extensions/resources/extensions_ui_qt_resources.pak",
       "$root_gen_dir/chrome/component_extension_resources.pak",
       "$root_gen_dir/extensions/extensions_renderer_resources.pak",
       "$root_gen_dir/extensions/extensions_resources.pak",
@@ -664,6 +669,7 @@ repack("qtwebengine_repack_resources") {
       "//chrome/browser/resources:component_extension_resources_grit",
       "//extensions:extensions_renderer_resources_grit",
       "//extensions:extensions_resources_grd_grit",
+      "//qtwebengine/browser/extensions/resources:resources_grit"
     ]
   }
   if (enable_webrtc) {

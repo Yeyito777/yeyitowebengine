@@ -3353,7 +3353,7 @@ void tst_QWebEngineView::webUIURLs_data()
     QTest::newRow("discards") << QUrl("chrome://discards") << false;
     QTest::newRow("download-internals") << QUrl("chrome://download-internals") << false;
     QTest::newRow("downloads") << QUrl("chrome://downloads") << false;
-    QTest::newRow("extensions") << QUrl("chrome://extensions") << false;
+    QTest::newRow("extensions") << QUrl("chrome://extensions") << true;
     QTest::newRow("extensions-internals") << QUrl("chrome://extensions-internals") << false;
     QTest::newRow("flags") << QUrl("chrome://flags") << false;
     QTest::newRow("gcm-internals") << QUrl("chrome://gcm-internals") << false;
