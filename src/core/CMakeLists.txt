@@ -194,6 +194,11 @@ foreach(arch ${archs})
                 content_settings_manager_qt.cpp content_settings_manager_qt.h
         )
 
+        extend_gn_target(${buildGn} CONDITION config STREQUAL "Debug"
+            DEFINES
+                QT_USE_DEBUG_RESOURCES
+        )
+
         extend_gn_target(${buildGn} CONDITION QT_FEATURE_accessibility
             SOURCES
                 accessibility_activation_observer.cpp accessibility_activation_observer.h
