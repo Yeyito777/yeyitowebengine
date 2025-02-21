@@ -475,7 +475,7 @@ void ContentBrowserClientQt::ExposeInterfacesToRenderer(service_manager::BinderR
 {
     if (auto *manager = performance_manager::PerformanceManagerRegistry::GetInstance())
         manager->CreateProcessNodeAndExposeInterfacesToRendererProcess(registry, render_process_host);
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     associated_registry->AddInterface<extensions::mojom::EventRouter>(base::BindRepeating(
             &extensions::EventRouter::BindForRenderer, render_process_host->GetID()));
 #else
