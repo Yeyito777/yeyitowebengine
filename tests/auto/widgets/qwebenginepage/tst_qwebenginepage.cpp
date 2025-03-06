@@ -5457,10 +5457,11 @@ void tst_QWebEnginePage::clientHints_data()
     QTest::addColumn<QString>("bitness");
     QTest::addColumn<bool>("isWOW64");
     QTest::addColumn<QVariantMap>("fullVersionList");
+    QTest::addColumn<QStringList>("formFactors");
 
-    QTest::newRow("Modify values") << true << "Abc" << "AmigaOS" << "Ultra" << true << "1.99" << "3" << "x64" << true << QVariantMap({{"APITest", "1.0.0"}, {"App", "5.0"}});
-    QTest::newRow("Empty values") << true << "" << "" << "" << false << "" << "" << "" << false << QVariantMap();
-    QTest::newRow("Disable headers") << false << "" << "" << "" << false << "" << "" << "" << false << QVariantMap();
+    QTest::newRow("Modify values") << true << "Abc" << "AmigaOS" << "Ultra" << true << "1.99" << "3" << "x64" << true << QVariantMap({{"APITest", "1.0.0"}, {"App", "5.0"}}) << QStringList({"Desktop", "Mobile"});
+    QTest::newRow("Empty values") << true << "" << "" << "" << false << "" << "" << "" << false << QVariantMap() << QStringList();
+    QTest::newRow("Disable headers") << false << "" << "" << "" << false << "" << "" << "" << false << QVariantMap() << QStringList();
 }
 
 void tst_QWebEnginePage::clientHints()
@@ -5475,6 +5476,7 @@ void tst_QWebEnginePage::clientHints()
     QFETCH(QString, bitness);
     QFETCH(bool, isWOW64);
     QFETCH(QVariantMap, fullVersionList);
+    QFETCH(QStringList, formFactors);
 
     QWebEnginePage page;
     QSignalSpy loadSpy(&page, SIGNAL(loadFinished(bool)));
@@ -5496,6 +5498,7 @@ void tst_QWebEnginePage::clientHints()
             QVERIFY(!r->hasRequestHeader("Sec-CH-UA-Bitness"));
             QVERIFY(!r->hasRequestHeader("Sec-CH-UA-Wow64"));
             QVERIFY(!r->hasRequestHeader("Sec-CH-UA-Full-Version-List"));
+            QVERIFY(!r->hasRequestHeader("Sec-CH-UA-Form-Factors"));
         }
 
         // The first request header won't contain any hints, only after a response with "Accept-CH"
@@ -5511,9 +5514,12 @@ void tst_QWebEnginePage::clientHints()
             QCOMPARE(QString(r->requestHeader("Sec-CH-UA-Wow64")).remove("\""), isWOW64 ? "?1" : "?0");
             for (auto i = fullVersionList.cbegin(), end = fullVersionList.cend(); i != end; ++i)
                 QVERIFY(QString(r->requestHeader("Sec-CH-UA-Full-Version-List")).contains(i.key().toLower()));
+
+            for (auto formFactor : formFactors)
+                QVERIFY(QString(r->requestHeader("Sec-CH-UA-Form-Factors")).contains(formFactor.toLower()));
         }
 
-        r->setResponseHeader("Accept-CH", "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Platform, Sec-CH-UA-Wow64, Sec-CH-UA");
+        r->setResponseHeader("Accept-CH", "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Platform, Sec-CH-UA-Wow64, Sec-CH-UA, Sec-CH-UA-Form-Factors");
         r->sendResponse();
         requestCount++;
     });
@@ -5528,6 +5534,7 @@ void tst_QWebEnginePage::clientHints()
     clientHints->setBitness(bitness);
     clientHints->setIsWow64(isWOW64);
     clientHints->setFullVersionList(fullVersionList);
+    clientHints->setFormFactors(formFactors);
 
     page.setUrl(server.url());
     QTRY_COMPARE(loadSpy.size(), 1);
@@ -5541,6 +5548,7 @@ void tst_QWebEnginePage::clientHints()
     QCOMPARE(clientHints->platformVersion(), platformVersion);
     QCOMPARE(clientHints->bitness(), bitness);
     QCOMPARE(clientHints->isWow64(), isWOW64);
+    QCOMPARE(clientHints->formFactors(), formFactors);
     for (auto i = fullVersionList.cbegin(), end = fullVersionList.cend(); i != end; ++i)
         QCOMPARE(clientHints->fullVersionList()[i.key()], i.value());
 
@@ -5562,6 +5570,7 @@ void tst_QWebEnginePage::clientHints()
     QCOMPARE_NE(clientHints->fullVersion(), fullVersion);
     QCOMPARE_NE(clientHints->platformVersion(), platformVersion);
     QCOMPARE_NE(clientHints->bitness(), bitness);
+    QCOMPARE_NE(clientHints->formFactors(), formFactors);
     for (auto i = fullVersionList.cbegin(), end = fullVersionList.cend(); i != end; ++i)
         QVERIFY(!clientHints->fullVersionList().contains(i.key()));
     QVERIFY(clientHints->fullVersionList().contains("Chromium"));

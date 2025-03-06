@@ -159,6 +159,7 @@ static const QStringList expectedAPI = QStringList()
     << "QWebEngineClientHints.wow64 --> bool"
     << "QWebEngineClientHints.isAllClientHintsEnabled --> bool"
     << "QWebEngineClientHints.resetAll() --> void"
+    << "QWebEngineClientHints.formFactors --> QStringList"
     << "QQuickWebEngineClientCertificateOption.issuer --> QString"
     << "QQuickWebEngineClientCertificateOption.subject --> QString"
     << "QQuickWebEngineClientCertificateOption.effectiveDate --> QDateTime"

@@ -675,6 +675,13 @@ QVariant ProfileAdapter::clientHint(ClientHint clientHint) const
         }
     case ProfileAdapter::UAWOW64:
         return QVariant(userAgentMetadata.wow64);
+    case ProfileAdapter::UAFormFactors: {
+        QStringList formFactors;
+        for (auto formFactor: userAgentMetadata.form_factors) {
+            formFactors.append(toQt(formFactor));
+        }
+        return formFactors;
+    }
     default:
         return QVariant();
     }
@@ -718,6 +725,14 @@ void ProfileAdapter::setClientHint(ClientHint clientHint, const QVariant &value)
     case ProfileAdapter::UAWOW64:
         userAgentMetadata.wow64 = value.toBool();
         break;
+    case ProfileAdapter::UAFormFactors: {
+        userAgentMetadata.form_factors.clear();
+        QStringList formFactors = value.toStringList();
+        formFactors.sort();
+        for (auto formFactor : formFactors)
+            userAgentMetadata.form_factors.push_back(formFactor.toStdString());
+        break;
+    }
     default:
         break;
     }

@@ -85,6 +85,7 @@ public:
         UABitness,
         UAFullVersionList,
         UAWOW64,
+        UAFormFactors,
     };
 
     explicit ProfileAdapter(

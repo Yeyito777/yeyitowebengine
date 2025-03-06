@@ -159,6 +159,22 @@ bool QWebEngineClientHints::isWow64() const
     return m_profileAdapter->clientHint(QtWebEngineCore::ProfileAdapter::UAWOW64).toBool();
 }
 
+/*!
+    \property QWebEngineClientHints::formFactors
+    The value of the \c{Sec-CH-UA-Form-Factors} HTTP request header.
+
+    It gives a server information about the user agent's form-factors. It is a structured header
+    whose value must be a list. The header's values are case-sensitive. For more information refer
+    \l{https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors}
+*/
+QStringList QWebEngineClientHints::formFactors() const
+{
+    if (!m_profileAdapter)
+        return QStringList();
+
+    return m_profileAdapter->clientHint(QtWebEngineCore::ProfileAdapter::UAFormFactors).toStringList();
+}
+
 void QWebEngineClientHints::setArch(const QString &arch)
 {
     if (!m_profileAdapter)
@@ -223,6 +239,14 @@ void QWebEngineClientHints::setIsWow64(bool wow64)
     if (!m_profileAdapter)
         return;
     m_profileAdapter->setClientHint(QtWebEngineCore::ProfileAdapter::UAWOW64, QVariant(wow64));
+}
+
+void QWebEngineClientHints::setFormFactors(const QStringList &formFactors)
+{
+    if (!m_profileAdapter)
+        return;
+    m_profileAdapter->setClientHint(QtWebEngineCore::ProfileAdapter::UAFormFactors,
+                                    QVariant(formFactors));
 }
 
 /*!
