@@ -200,7 +200,6 @@ public:
     void setClientHintsEnabled(bool enabled);
     void resetClientHints();
 
-
     void clearHttpCache();
 
 #if QT_CONFIG(ssl)

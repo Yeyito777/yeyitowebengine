@@ -132,10 +132,14 @@ QString QWebEngineClientHints::bitness() const
 
 /*!
     \property QWebEngineClientHints::fullVersionList
-    The value of the \c{Sec-CH-UA-Full-Version-List} HTTP header and \c{fullVersionList} member of NavigatorUAData in JavaScript.
+    The value of the \c{Sec-CH-UA-Full-Version-List} HTTP header and \c{fullVersionList} member of
+   NavigatorUAData in JavaScript.
 
-    It holds brand name and version number pairs in a QVariantMap. The provided values will be automatically extended by the currently used version
-    of Chromium and a semi-random brand.
+    The value of Sec-CH-UA header will also be generated from this by truncating the version
+   numbers.
+
+    It holds brand name and version number pairs in a QVariantMap. The provided values will be
+   automatically extended by the currently used version of Chromium and a semi-random brand.
 */
 QVariantMap QWebEngineClientHints::fullVersionList() const
 {

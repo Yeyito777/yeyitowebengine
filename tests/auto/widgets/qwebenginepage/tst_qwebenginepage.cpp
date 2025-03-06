@@ -5482,12 +5482,16 @@ void tst_QWebEnginePage::clientHints()
     QSignalSpy loadSpy(&page, SIGNAL(loadFinished(bool)));
 
     QWebEngineClientHints *clientHints = page.profile()->clientHints();
+    // fullVersionList is extended by Chromium and a greased brand by default
+    QCOMPARE(clientHints->fullVersionList().size(), 2);
+    QVERIFY(clientHints->fullVersionList().contains("Chromium"));
     clientHints->setAllClientHintsEnabled(clientHintsEnabled);
 
     HttpServer server;
     int requestCount = 0;
-    connect(&server, &HttpServer::newRequest, [&] (HttpReqRep *r) {
-        // Platform and Mobile hints are always sent and can't be disabled with this API
+    connect(&server, &HttpServer::newRequest, [&](HttpReqRep *r) {
+        // UA, Platform and Mobile hints are always sent and can't be disabled with this API
+        QVERIFY(r->hasRequestHeader("Sec-CH-UA"));
         QVERIFY(r->hasRequestHeader("Sec-CH-UA-Platform"));
         QVERIFY(r->hasRequestHeader("Sec-CH-UA-Mobile"));
         if (!clientHintsEnabled) {
@@ -5512,9 +5516,10 @@ void tst_QWebEnginePage::clientHints()
             QCOMPARE(QString(r->requestHeader("Sec-CH-UA-Platform-Version")).remove("\""), platformVersion.toLower());
             QCOMPARE(QString(r->requestHeader("Sec-CH-UA-Bitness")).remove("\""), bitness.toLower());
             QCOMPARE(QString(r->requestHeader("Sec-CH-UA-Wow64")).remove("\""), isWOW64 ? "?1" : "?0");
-            for (auto i = fullVersionList.cbegin(), end = fullVersionList.cend(); i != end; ++i)
+            for (auto i = fullVersionList.cbegin(), end = fullVersionList.cend(); i != end; ++i) {
+                QVERIFY(QString(r->requestHeader("Sec-CH-UA")).contains(i.key().toLower()));
                 QVERIFY(QString(r->requestHeader("Sec-CH-UA-Full-Version-List")).contains(i.key().toLower()));
-
+            }
             for (auto formFactor : formFactors)
                 QVERIFY(QString(r->requestHeader("Sec-CH-UA-Form-Factors")).contains(formFactor.toLower()));
         }
@@ -5549,8 +5554,10 @@ void tst_QWebEnginePage::clientHints()
     QCOMPARE(clientHints->bitness(), bitness);
     QCOMPARE(clientHints->isWow64(), isWOW64);
     QCOMPARE(clientHints->formFactors(), formFactors);
+    QCOMPARE(clientHints->fullVersionList().size(), fullVersionList.size());
     for (auto i = fullVersionList.cbegin(), end = fullVersionList.cend(); i != end; ++i)
         QCOMPARE(clientHints->fullVersionList()[i.key()], i.value());
+    QVERIFY(!clientHints->fullVersionList().contains("Chromium"));
 
     // A new user agent string should not override/disable client hints
     page.profile()->setHttpUserAgent(QStringLiteral("Custom user agent"));
@@ -5571,6 +5578,7 @@ void tst_QWebEnginePage::clientHints()
     QCOMPARE_NE(clientHints->platformVersion(), platformVersion);
     QCOMPARE_NE(clientHints->bitness(), bitness);
     QCOMPARE_NE(clientHints->formFactors(), formFactors);
+    QCOMPARE(clientHints->fullVersionList().size(), 2);
     for (auto i = fullVersionList.cbegin(), end = fullVersionList.cend(); i != end; ++i)
         QVERIFY(!clientHints->fullVersionList().contains(i.key()));
     QVERIFY(clientHints->fullVersionList().contains("Chromium"));

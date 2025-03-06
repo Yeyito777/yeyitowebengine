@@ -6,6 +6,7 @@
 #include "base/files/file_util.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/version_info/version_info.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/content/browser/history_database_helper.h"
@@ -52,6 +53,36 @@ inline QString buildLocationFromStandardPath(const QString &standardPath, const 
 
     location += "/QtWebEngine/"_L1 % name;
     return location;
+}
+
+void PopulateBrandVersionLists(const QJsonObject &fullVersionList,
+                               blink::UserAgentMetadata &userAgentMetadata)
+{
+    userAgentMetadata.brand_version_list.clear();
+    userAgentMetadata.brand_full_version_list.clear();
+
+    for (const QString &key : fullVersionList.keys()) {
+        std::string version = fullVersionList.value(key).toString().toStdString();
+        userAgentMetadata.brand_full_version_list.push_back({ key.toStdString(), version });
+        version = version.substr(0, version.find('.'));
+        userAgentMetadata.brand_version_list.push_back({ key.toStdString(), version });
+    }
+
+    // Shuffle the lists
+    int permutations = 1;
+    for (int i = 2; i <= fullVersionList.size(); i++)
+        permutations *= i;
+    // We keep the brand lists identical throughout the lifetime of each major version of Chromium.
+    permutations = version_info::GetMajorVersionNumberAsInt() % permutations;
+    auto compare = [](blink::UserAgentBrandVersion &a, blink::UserAgentBrandVersion &b) {
+        return a.brand + a.version < b.brand + b.version;
+    };
+    for (int i = 0; i < permutations; i++) {
+        std::next_permutation(userAgentMetadata.brand_version_list.begin(),
+                              userAgentMetadata.brand_version_list.end(), compare);
+        std::next_permutation(userAgentMetadata.brand_full_version_list.begin(),
+                              userAgentMetadata.brand_full_version_list.end(), compare);
+    }
 }
 }
 
@@ -713,13 +744,7 @@ void ProfileAdapter::setClientHint(ClientHint clientHint, const QVariant &value)
         userAgentMetadata.bitness = value.toString().toStdString();
         break;
     case ProfileAdapter::UAFullVersionList: {
-        userAgentMetadata.brand_full_version_list.clear();
-        QJsonObject fullVersionList = value.toJsonObject();
-        for (const QString &key : fullVersionList.keys())
-            userAgentMetadata.brand_full_version_list.push_back({
-                key.toStdString(),
-                fullVersionList.value(key).toString().toStdString()
-            });
+        PopulateBrandVersionLists(value.toJsonObject(), userAgentMetadata);
         break;
     }
     case ProfileAdapter::UAWOW64:
@@ -758,7 +783,7 @@ void ProfileAdapter::setClientHintsEnabled(bool enabled)
 
 void ProfileAdapter::resetClientHints()
 {
-    m_profile->m_userAgentMetadata = embedder_support::GetUserAgentMetadata();
+    m_profile->initUserAgentMetadata();
     std::vector<content::WebContentsImpl *> list = content::WebContentsImpl::GetAllWebContents();
     for (content::WebContentsImpl *web_contents : list) {
         if (web_contents->GetBrowserContext() == m_profile.data()) {

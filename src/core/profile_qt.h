@@ -75,6 +75,7 @@ public:
     PrefServiceAdapter &prefServiceAdapter();
     const PrefServiceAdapter &prefServiceAdapter() const;
 
+    void initUserAgentMetadata();
     const blink::UserAgentMetadata &userAgentMetadata();
 
 private:
