@@ -1054,7 +1054,7 @@ ContentBrowserClientQt::CreateNonNetworkNavigationURLLoaderFactory(
     Profile *profile = Profile::FromBrowserContext(web_contents->GetBrowserContext());
     ProfileAdapter *profileAdapter = static_cast<ProfileQt *>(profile)->profileAdapter();
 
-    if (profileAdapter->customUrlSchemes().contains(scheme))
+    if (profileAdapter->customUrlSchemes().contains(QByteArrayView(scheme)))
         return CreateCustomURLLoaderFactory(profileAdapter, web_contents);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
