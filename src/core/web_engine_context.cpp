@@ -266,6 +266,7 @@ public:
     }
 
     Vendor vendor() const { return m_vendor; }
+    QString deviceName() const { return m_deviceName; }
     QString getAdapterLuid() const { return m_adapterLuid; }
 
 private:
@@ -288,6 +289,7 @@ private:
             }
             if (d3d11Rhi) {
                 m_vendor = vendorIdToVendor(d3d11Rhi->driverInfo().vendorId);
+                m_deviceName = QString::fromUtf8(d3d11Rhi->driverInfo().deviceName);
 
                 const QRhiD3D11NativeHandles *handles =
                         static_cast<const QRhiD3D11NativeHandles *>(d3d11Rhi->nativeHandles());
@@ -301,8 +303,10 @@ private:
             QRhiMetalInitParams params;
             QScopedPointer<QRhi> metalRhi(
                     QRhi::create(QRhi::Metal, &params, QRhi::Flags(), nullptr));
-            if (metalRhi)
+            if (metalRhi) {
                 m_vendor = deviceNameToVendor(QLatin1StringView(metalRhi->driverInfo().deviceName));
+                m_deviceName = QString::fromUtf8(metalRhi->driverInfo().deviceName);
+            }
         }
 #endif
 
@@ -312,8 +316,10 @@ private:
             params.fallbackSurface = QRhiGles2InitParams::newFallbackSurface();
             QScopedPointer<QRhi> glRhi(
                     QRhi::create(QRhi::OpenGLES2, &params, QRhi::Flags(), nullptr));
-            if (glRhi)
+            if (glRhi) {
                 m_vendor = deviceNameToVendor(QLatin1StringView(glRhi->driverInfo().deviceName));
+                m_deviceName = QString::fromUtf8(glRhi->driverInfo().deviceName);
+            }
         }
 #endif
 
@@ -333,6 +339,7 @@ private:
                     // see https://www.phoronix.com/news/Mesa-20.1-Vulkan-Dev-Selection
                     // Try to detect this case and at least warn about it.
                     m_vendor = vendorIdToVendor(vulkanRhi->driverInfo().vendorId);
+                    m_deviceName = QString::fromUtf8(vulkanRhi->driverInfo().deviceName);
                 }
             }
         }
@@ -343,6 +350,7 @@ private:
     }
 
     Vendor m_vendor = Unknown;
+    QString m_deviceName;
     QString m_adapterLuid;
 };
 
@@ -430,7 +438,8 @@ static void logContext(const std::string &glType, base::CommandLine *cmd)
         log += "QSG RHI Backend: "_L1 + QSGRhiSupport::instance()->rhiBackendName() + u'\n';
         log += "QSG RHI Backend Supported: "_L1 + (usingSupportedSGBackend() ? "yes"_L1 : "no"_L1)
                 + u'\n';
-        log += "GPU Vendor: "_L1
+        log += "QSG RHI Device: "_L1 + GPUInfo::instance()->deviceName() + u'\n';
+        log += "QSG RHI GPU Vendor: "_L1
                 + QLatin1StringView(GPUInfo::vendorToString(GPUInfo::instance()->vendor())) + u'\n';
         log += u'\n';
 
