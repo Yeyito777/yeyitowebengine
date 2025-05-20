@@ -912,6 +912,19 @@ QWebEngineClientCertificateStore *QWebEngineProfile::clientCertificateStore()
 }
 
 /*!
+    \since 6.10
+
+    Returns additional trusted certificates in this profile's CA certificate database.
+
+    \sa QWebEngineProfileBuilder::setAdditionalTrustedCertificates()
+*/
+QList<QSslCertificate> QWebEngineProfile::additionalTrustedCertificates() const
+{
+    Q_D(const QWebEngineProfile);
+    return d->profileAdapter()->additionalTrustedCertificates();
+}
+
+/*!
  * Requests an icon for a previously loaded page with this profile from the database. Each profile
  * has its own icon database and it is stored in the persistent storage thus the stored icons
  * can be accessed without network connection too. The icon must be previously loaded to be

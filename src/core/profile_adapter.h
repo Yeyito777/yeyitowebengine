@@ -94,7 +94,8 @@ public:
             PersistentCookiesPolicy persistentCookiesPolicy = AllowPersistentCookies,
             int httpCacheMaximumSize = 0,
             PersistentPermissionsPolicy persistentPermissionPolicy =
-                    PersistentPermissionsPolicy::StoreOnDisk);
+                    PersistentPermissionsPolicy::StoreOnDisk,
+            const QList<QSslCertificate> &additionalTrustedCertificates = {});
     virtual ~ProfileAdapter();
 
     static ProfileAdapter* createDefaultProfileAdapter();
@@ -205,6 +206,7 @@ public:
 #if QT_CONFIG(ssl)
     QWebEngineClientCertificateStore *clientCertificateStore();
 #endif
+    QList<QSslCertificate> additionalTrustedCertificates() const;
 
     QHash<QByteArray, QWeakPointer<UserNotificationController>> &ephemeralNotifications()
     {   return m_ephemeralNotifications; }
@@ -246,6 +248,7 @@ private:
     PersistentCookiesPolicy m_persistentCookiesPolicy;
     PersistentPermissionsPolicy m_persistentPermissionsPolicy;
     VisitedLinksPolicy m_visitedLinksPolicy;
+    QList<QSslCertificate> m_additionalTrustedCertificates;
     QHash<QByteArray, QPointer<QWebEngineUrlSchemeHandler>> m_customUrlSchemeHandlers;
     QHash<QByteArray, QWeakPointer<UserNotificationController>> m_ephemeralNotifications;
     QHash<QByteArray, QSharedPointer<UserNotificationController>> m_persistentNotifications;

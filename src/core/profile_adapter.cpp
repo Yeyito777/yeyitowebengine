@@ -92,7 +92,8 @@ ProfileAdapter::ProfileAdapter(const QString &storageName, const QString &dataPa
                                const QString &cachePath, HttpCacheType httpCacheType,
                                PersistentCookiesPolicy persistentCookiesPolicy,
                                int httpCacheMaximumSize,
-                               PersistentPermissionsPolicy persistentPermissionPolicy)
+                               PersistentPermissionsPolicy persistentPermissionPolicy,
+                               const QList<QSslCertificate> &additionalTrustedCertificates)
     : m_name(storageName)
     , m_offTheRecord(storageName.isEmpty())
     , m_dataPath(dataPath.isEmpty() && !m_name.isEmpty() ? buildLocationFromStandardPath(
@@ -106,6 +107,7 @@ ProfileAdapter::ProfileAdapter(const QString &storageName, const QString &dataPa
     , m_persistentCookiesPolicy(persistentCookiesPolicy)
     , m_persistentPermissionsPolicy(persistentPermissionPolicy)
     , m_visitedLinksPolicy(TrackVisitedLinksOnDisk)
+    , m_additionalTrustedCertificates(additionalTrustedCertificates)
     , m_clientHintsEnabled(true)
     , m_pushServiceEnabled(false)
     , m_httpCacheMaxSize(m_name.isEmpty() ? 0 : httpCacheMaximumSize)
@@ -916,6 +918,11 @@ QWebEngineClientCertificateStore *ProfileAdapter::clientCertificateStore()
     return m_clientCertificateStore;
 }
 #endif
+
+QList<QSslCertificate> ProfileAdapter::additionalTrustedCertificates() const
+{
+    return m_additionalTrustedCertificates;
+}
 
 static void callbackOnIconAvailableForPageURL(std::function<void (const QIcon &, const QUrl &, const QUrl &)> iconAvailableCallback,
                                               const QUrl &pageUrl,

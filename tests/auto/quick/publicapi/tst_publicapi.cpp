@@ -974,6 +974,7 @@ static const QStringList expectedAPI = QStringList()
     << "QQuickWebEngineProfilePrototype.persistentCookiesPolicy --> QQuickWebEngineProfile::PersistentCookiesPolicy"
     << "QQuickWebEngineProfilePrototype.httpCacheMaximumSize --> int"
     << "QQuickWebEngineProfilePrototype.persistentPermissionsPolicy --> QQuickWebEngineProfile::PersistentPermissionsPolicy"
+    << "QQuickWebEngineProfilePrototype.additionalTrustedCertificateFiles --> QStringList"
     << "QQuickWebEngineProfilePrototype.instance() --> QQuickWebEngineProfile*"
     ;
 

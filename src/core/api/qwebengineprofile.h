@@ -16,6 +16,7 @@
 
 QT_BEGIN_NAMESPACE
 
+class QSslCertificate;
 class QUrl;
 class QWebEngineClientCertificateStore;
 class QWebEngineClientHints;
@@ -117,6 +118,7 @@ public:
     void setNotificationPresenter(std::function<void(std::unique_ptr<QWebEngineNotification>)> notificationPresenter);
 
     QWebEngineClientCertificateStore *clientCertificateStore();
+    QList<QSslCertificate> additionalTrustedCertificates() const;
 
     void requestIconForPageURL(const QUrl &url, int desiredSizeInPixel, std::function<void(const QIcon &, const QUrl &, const QUrl &)> iconAvailableCallback) const;
     void requestIconForIconURL(const QUrl &url, int desiredSizeInPixel, std::function<void(const QIcon &, const QUrl &)> iconAvailableCallback) const;

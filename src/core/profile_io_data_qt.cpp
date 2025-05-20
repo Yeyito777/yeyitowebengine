@@ -236,6 +236,20 @@ void ProfileIODataQt::ConfigureNetworkContextParams(bool in_memory,
         m_profile->GetSharedCorsOriginAccessList()->GetOriginAccessList().CreateCorsOriginAccessPatternsList();
 
     m_proxyConfigMonitor->AddToNetworkContextParams(network_context_params);
+
+    const auto additionalCertificates = m_profileAdapter->additionalTrustedCertificates();
+    if (!additionalCertificates.isEmpty()) {
+        auto additionalVerifiedCertificates = cert_verifier::mojom::AdditionalCertificates::New();
+
+        for (const QSslCertificate &certificate : additionalCertificates) {
+            const QByteArray certificateBytes = certificate.toDer();
+            additionalVerifiedCertificates->trust_anchors.push_back(
+                    std::vector<uint8_t>(certificateBytes.begin(), certificateBytes.end()));
+        }
+
+        cert_verifier_creation_params->initial_additional_certificates =
+                std::move(additionalVerifiedCertificates);
+    }
 }
 
 // static

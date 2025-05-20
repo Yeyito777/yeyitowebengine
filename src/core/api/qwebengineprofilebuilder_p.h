@@ -30,6 +30,7 @@ struct QWebEngineProfileBuilderPrivate
     int m_httpCacheMaxSize;
     QWebEngineProfile::PersistentPermissionsPolicy m_persistentPermissionPolicy =
             QWebEngineProfile::PersistentPermissionsPolicy::StoreOnDisk;
+    QList<QSslCertificate> m_additionalTrustedCertificates;
 };
 QT_END_NAMESPACE
 #endif // QWEBENGINEPROFILEBUILDER_P_H
