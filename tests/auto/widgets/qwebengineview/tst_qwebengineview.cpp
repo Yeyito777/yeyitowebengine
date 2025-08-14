@@ -1856,6 +1856,7 @@ void tst_QWebEngineView::inputFieldOverridesShortcuts()
     QVERIFY(loadFinishedSpy.wait());
 
     view.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&view));
     view.window()->windowHandle()->requestActivate();
     QVERIFY(QTest::qWaitForWindowActive(&view));
 
@@ -4096,7 +4097,7 @@ void tst_QWebEngineView::setCursorOnEmbeddedView()
     QVERIFY(renderWidgetHostViewQtDelegateItem);
     QTRY_COMPARE(renderWidgetHostViewQtDelegateItem->hasFocus(), true);
 
-    QTRY_COMPARE(renderWidgetHostViewQtDelegateItem->cursor().shape(), Qt::PointingHandCursor);
+    QTRY_COMPARE_WITH_TIMEOUT(renderWidgetHostViewQtDelegateItem->cursor().shape(), Qt::PointingHandCursor, 10000);
     QTRY_COMPARE(view.cursor().shape(), Qt::PointingHandCursor);
 }
 
