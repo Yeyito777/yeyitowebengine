@@ -1,5 +1,5 @@
 [submodule "src/3rdparty"]
     path = src/3rdparty
-    url = https://github.com/qt/qtwebengine-chromium.git
+    url = https://github.com/Yeyito777/qtwebengine-chromium.git
     ignore = dirty
     initrepo = true
