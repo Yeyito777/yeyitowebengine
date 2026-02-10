@@ -289,7 +289,7 @@ void WebEngineSettings::initDefaults()
         s_defaultAttributes.insert(QWebEngineSettings::TouchEventsApiEnabled,
                                    isTouchScreenDetected());
         s_defaultAttributes.insert(QWebEngineSettings::BackForwardCacheEnabled, false);
-        s_defaultAttributes.insert(QWebEngineSettings::ElementShaderEnabled, true);
+        s_defaultAttributes.insert(QWebEngineSettings::ElementShaderEnabled, false);
     }
 
     if (s_defaultFontFamilies.isEmpty()) {
