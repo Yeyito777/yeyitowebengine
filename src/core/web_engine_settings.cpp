@@ -389,8 +389,6 @@ void WebEngineSettings::applySettingsToWebPreferences(blink::web_pref::WebPrefer
     prefs->force_dark_mode_enabled = testAttribute(QWebEngineSettings::ForceDarkMode);
     prefs->element_shader_enabled = testAttribute(QWebEngineSettings::ElementShaderEnabled);
     ui::NativeTheme::set_element_shader_enabled(prefs->element_shader_enabled);
-    fprintf(stderr, "[SHADER-DEBUG-1] web_engine_settings: element_shader_enabled = %s\n",
-            prefs->element_shader_enabled ? "true" : "false");
     prefs->webgl1_enabled = prefs->webgl2_enabled = testAttribute(QWebEngineSettings::WebGLEnabled);
     prefs->should_print_backgrounds = testAttribute(QWebEngineSettings::PrintElementBackgrounds);
     prefs->allow_running_insecure_content =
