@@ -930,6 +930,7 @@ WebEngineContext::WebEngineContext()
 
     // Init GPU switches.
     parsedCommandLine.AppendSwitch(switches::kInProcessGPU);
+    parsedCommandLine.AppendSwitch(switches::kDisableGpuEarlyInit);
 
     std::string glType = getGLType(parsedCommandLine);
     // Always set --use-gl.
