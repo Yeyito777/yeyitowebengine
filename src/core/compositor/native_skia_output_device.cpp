@@ -19,6 +19,9 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_fence.h"
 
+#include <QGuiApplication>
+#include <QScreen>
+
 #if BUILDFLAG(IS_OZONE)
 #include "ozone/gl_ozone_qt.h"
 
@@ -104,7 +107,27 @@ void NativeSkiaOutputDevice::Present(const std::optional<gfx::Rect> &update_rect
 {
     DCHECK(m_backBuffer);
 
-    StartSwapBuffers(std::move(feedback));
+    // Wrap feedback to report the actual display refresh interval.
+    // The base SkiaOutputDevice sends a zero interval in PresentationFeedback,
+    // which leaves the compositor's DelayBasedBeginFrameSource at 60 Hz.
+    // Injecting the real interval from QScreen lets the compositor tick at
+    // the monitor's native refresh rate.
+    auto wrappedFeedback = base::BindOnce(
+            [](BufferPresentedCallback original,
+               const gfx::PresentationFeedback &feedback) {
+                gfx::PresentationFeedback adjusted = feedback;
+                if (adjusted.interval.is_zero()) {
+                    if (QScreen *screen = QGuiApplication::primaryScreen()) {
+                        qreal hz = screen->refreshRate();
+                        if (hz > 0)
+                            adjusted.interval = base::Seconds(1.0 / hz);
+                    }
+                }
+                std::move(original).Run(adjusted);
+            },
+            std::move(feedback));
+
+    StartSwapBuffers(std::move(wrappedFeedback));
     m_frame = std::move(frame);
     {
         QMutexLocker locker(&m_mutex);
