@@ -144,6 +144,7 @@ public:
     qreal currentZoomFactor() const;
     void runJavaScript(const QString &javaScript, quint32 worldId, quint64 frameId,
                        const std::function<void(const QVariant &)> &callback);
+    void notifyUserActivation(quint64 frameId);
     void didRunJavaScript(quint64 requestId, const base::Value &result);
     void clearJavaScriptCallbacks();
     quint64 fetchDocumentMarkup();

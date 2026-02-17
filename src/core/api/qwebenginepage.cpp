@@ -2079,6 +2079,13 @@ void QWebEnginePage::runJavaScript(const QString& scriptSource, quint32 worldId,
     d->runJavaScript(scriptSource, worldId, WebContentsAdapter::kUseMainFrameId, resultCallback);
 }
 
+void QWebEnginePage::notifyUserActivation()
+{
+    Q_D(QWebEnginePage);
+    d->ensureInitialized();
+    d->adapter->notifyUserActivation(WebContentsAdapter::kUseMainFrameId);
+}
+
 /*!
     Returns the collection of scripts that are injected into the page.
 

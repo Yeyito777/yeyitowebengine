@@ -58,6 +58,7 @@
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/gfx/font_render_params.h"
@@ -1091,6 +1092,17 @@ void WebContentsAdapter::runJavaScript(const QString &javaScript, quint32 worldI
     else
         rfh->ExecuteJavaScriptInIsolatedWorld(toString16(javaScript), std::move(internalCallback),
                                               worldId);
+}
+
+void WebContentsAdapter::notifyUserActivation(quint64 frameId)
+{
+    if (!isInitialized())
+        return;
+    auto *rfh = renderFrameHostFromFrameId(frameId);
+    if (!rfh)
+        return;
+    rfh->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kInteraction);
 }
 
 void WebContentsAdapter::didRunJavaScript(quint64 requestId, const base::Value &result)

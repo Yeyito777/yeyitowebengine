@@ -288,6 +288,7 @@ public:
 
     void runJavaScript(const QString &scriptSource, const std::function<void(const QVariant &)> &resultCallback);
     void runJavaScript(const QString &scriptSource, quint32 worldId = 0, const std::function<void(const QVariant &)> &resultCallback = {});
+    void notifyUserActivation();
     QWebEngineScriptCollection &scripts();
     QWebEngineSettings *settings() const;
 
