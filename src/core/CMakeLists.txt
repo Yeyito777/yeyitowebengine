@@ -179,6 +179,7 @@ foreach(arch ${archs})
                 request_controller.h
                 resource_bundle_qt.cpp
                 select_file_dialog_factory_qt.cpp select_file_dialog_factory_qt.h
+                smooth_scroll_controller.cpp smooth_scroll_controller.h
                 touch_handle_drawable_client.h
                 touch_handle_drawable_qt.cpp touch_handle_drawable_qt.h
                 touch_selection_controller_client_qt.cpp touch_selection_controller_client_qt.h

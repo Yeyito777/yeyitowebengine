@@ -1105,6 +1105,14 @@ void WebContentsAdapter::notifyUserActivation(quint64 frameId)
         blink::mojom::UserActivationNotificationType::kInteraction);
 }
 
+void WebContentsAdapter::smoothScrollBy(int dx, int dy, double factor)
+{
+    CHECK_INITIALIZED();
+    if (auto *rwhv = static_cast<RenderWidgetHostViewQt *>(
+            m_webContents->GetRenderWidgetHostView()))
+        rwhv->smoothScrollBy(dx, dy, factor);
+}
+
 void WebContentsAdapter::didRunJavaScript(quint64 requestId, const base::Value &result)
 {
     Q_ASSERT(requestId);

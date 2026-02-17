@@ -33,6 +33,7 @@ class RenderWidgetHostViewQtDelegateClient;
 class InputEventObserverQt;
 class TouchSelectionControllerClientQt;
 class WebContentsAccessibilityQt;
+class SmoothScrollController;
 class WebContentsAdapterClient;
 
 class RenderWidgetHostViewQt
@@ -183,8 +184,11 @@ public:
 
     void resetTouchSelectionController();
 
+    void smoothScrollBy(int dx, int dy, double factor);
+
 private:
     friend class DelegatedFrameHostClientQt;
+    friend class SmoothScrollController;
     friend class WebContentsAccessibilityQt;
 
     bool isPopup() const;
@@ -225,6 +229,9 @@ private:
     bool m_wheelAckPending = false;
     QList<blink::WebMouseWheelEvent> m_pendingWheelEvents;
     content::MouseWheelPhaseHandler m_mouseWheelPhaseHandler { this };
+
+    // Smooth scroll
+    std::unique_ptr<SmoothScrollController> m_smoothScrollController;
 
     // TouchSelection
     std::unique_ptr<TouchSelectionControllerClientQt> m_touchSelectionControllerClient;

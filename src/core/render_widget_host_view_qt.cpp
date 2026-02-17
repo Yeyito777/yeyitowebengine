@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include "render_widget_host_view_qt.h"
+#include "smooth_scroll_controller.h"
 
 #include "qtwebenginecoreglobal_p.h"
 #include "render_widget_host_view_qt_delegate.h"
@@ -186,11 +187,15 @@ RenderWidgetHostViewQt::RenderWidgetHostViewQt(content::RenderWidgetHost *widget
     host()->render_frame_metadata_provider()->AddObserver(this);
     host()->render_frame_metadata_provider()->ReportAllFrameSubmissionsForTesting(true);
 
+    m_smoothScrollController = std::make_unique<SmoothScrollController>(this);
+
     host()->SetView(this);
 }
 
 RenderWidgetHostViewQt::~RenderWidgetHostViewQt()
 {
+    m_smoothScrollController.reset();
+
     m_delegate.reset();
 
     QObject::disconnect(m_adapterClientDestroyedConnection);
@@ -1060,6 +1065,12 @@ void RenderWidgetHostViewQt::resetTouchSelectionController()
     config.tap_slop = ui::GestureConfiguration::GetInstance()->max_touch_move_in_pixels_for_click();
     config.enable_longpress_drag_selection = false;
     m_touchSelectionController.reset(new ui::TouchSelectionController(m_touchSelectionControllerClient.get(), config));
+}
+
+void RenderWidgetHostViewQt::smoothScrollBy(int dx, int dy, double factor)
+{
+    if (m_smoothScrollController)
+        m_smoothScrollController->scrollBy(dx, dy, factor);
 }
 
 std::unique_ptr<content::SyntheticGestureTarget> RenderWidgetHostViewQt::CreateSyntheticGestureTarget()
