@@ -10,7 +10,6 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <cmath>
-#include <cstdio>
 
 namespace QtWebEngineCore {
 
@@ -39,7 +38,6 @@ SmoothScrollController::~SmoothScrollController()
 
 void SmoothScrollController::scrollBy(int dx, int dy, double factor)
 {
-    fprintf(stderr, "[SCROLL-DEBUG-CPP] scrollBy: dx=%d, dy=%d, factor=%f, scrolling=%d\n", dx, dy, factor, m_scrolling);
     m_dx += dx;
     m_dy += dy;
     m_factor = factor;
@@ -127,7 +125,6 @@ void SmoothScrollController::sendGestureScrollBegin()
     event.data.scroll_begin.delta_x_hint = 0;
     event.data.scroll_begin.delta_y_hint = 0;
 
-    fprintf(stderr, "[SCROLL-DEBUG-CPP] ForwardGesture BEGIN at (%f,%f)\n", center.x(), center.y());
     host->ForwardGestureEvent(event);
 }
 
@@ -149,8 +146,6 @@ void SmoothScrollController::sendGestureScrollUpdate(int stepX, int stepY)
     event.data.scroll_update.delta_x = static_cast<float>(-stepX);
     event.data.scroll_update.delta_y = static_cast<float>(-stepY);
 
-    fprintf(stderr, "[SCROLL-DEBUG-CPP] ForwardGesture UPDATE delta=(%f,%f)\n",
-            event.data.scroll_update.delta_x, event.data.scroll_update.delta_y);
     host->ForwardGestureEvent(event);
 }
 
@@ -170,7 +165,6 @@ void SmoothScrollController::sendGestureScrollEnd()
     event.SetSourceDevice(blink::WebGestureDevice::kTouchpad);
     event.SetPositionInWidget(center);
 
-    fprintf(stderr, "[SCROLL-DEBUG-CPP] ForwardGesture END\n");
     host->ForwardGestureEvent(event);
 }
 
