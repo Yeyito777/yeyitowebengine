@@ -1067,10 +1067,10 @@ void RenderWidgetHostViewQt::resetTouchSelectionController()
     m_touchSelectionController.reset(new ui::TouchSelectionController(m_touchSelectionControllerClient.get(), config));
 }
 
-void RenderWidgetHostViewQt::smoothScrollBy(int dx, int dy, double factor)
+void RenderWidgetHostViewQt::smoothScrollBy(int dx, int dy, double factor, int posX, int posY)
 {
     if (m_smoothScrollController)
-        m_smoothScrollController->scrollBy(dx, dy, factor);
+        m_smoothScrollController->scrollBy(dx, dy, factor, posX, posY);
 }
 
 std::unique_ptr<content::SyntheticGestureTarget> RenderWidgetHostViewQt::CreateSyntheticGestureTarget()

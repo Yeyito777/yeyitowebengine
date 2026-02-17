@@ -145,7 +145,7 @@ public:
     void runJavaScript(const QString &javaScript, quint32 worldId, quint64 frameId,
                        const std::function<void(const QVariant &)> &callback);
     void notifyUserActivation(quint64 frameId);
-    void smoothScrollBy(int dx, int dy, double factor);
+    void smoothScrollBy(int dx, int dy, double factor, int posX = -1, int posY = -1);
     void didRunJavaScript(quint64 requestId, const base::Value &result);
     void clearJavaScriptCallbacks();
     quint64 fetchDocumentMarkup();

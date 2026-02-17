@@ -1105,12 +1105,12 @@ void WebContentsAdapter::notifyUserActivation(quint64 frameId)
         blink::mojom::UserActivationNotificationType::kInteraction);
 }
 
-void WebContentsAdapter::smoothScrollBy(int dx, int dy, double factor)
+void WebContentsAdapter::smoothScrollBy(int dx, int dy, double factor, int posX, int posY)
 {
     CHECK_INITIALIZED();
     if (auto *rwhv = static_cast<RenderWidgetHostViewQt *>(
             m_webContents->GetRenderWidgetHostView()))
-        rwhv->smoothScrollBy(dx, dy, factor);
+        rwhv->smoothScrollBy(dx, dy, factor, posX, posY);
 }
 
 void WebContentsAdapter::didRunJavaScript(quint64 requestId, const base::Value &result)

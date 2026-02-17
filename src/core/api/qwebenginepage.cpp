@@ -2086,11 +2086,11 @@ void QWebEnginePage::notifyUserActivation()
     d->adapter->notifyUserActivation(WebContentsAdapter::kUseMainFrameId);
 }
 
-void QWebEnginePage::smoothScrollBy(int dx, int dy, double factor)
+void QWebEnginePage::smoothScrollBy(int dx, int dy, double factor, int posX, int posY)
 {
     Q_D(QWebEnginePage);
     d->ensureInitialized();
-    d->adapter->smoothScrollBy(dx, dy, factor);
+    d->adapter->smoothScrollBy(dx, dy, factor, posX, posY);
 }
 
 /*!

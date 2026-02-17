@@ -36,13 +36,15 @@ SmoothScrollController::~SmoothScrollController()
     }
 }
 
-void SmoothScrollController::scrollBy(int dx, int dy, double factor)
+void SmoothScrollController::scrollBy(int dx, int dy, double factor, int posX, int posY)
 {
     m_dx += dx;
     m_dy += dy;
     m_factor = factor;
 
     if (!m_scrolling) {
+        m_posX = posX;
+        m_posY = posY;
         m_subPixelX = 0.0;
         m_subPixelY = 0.0;
         sendGestureScrollBegin();
@@ -107,21 +109,28 @@ void SmoothScrollController::tick()
     }
 }
 
+gfx::PointF SmoothScrollController::hitTestPosition()
+{
+    if (m_posX >= 0 && m_posY >= 0)
+        return gfx::PointF(static_cast<float>(m_posX), static_cast<float>(m_posY));
+    gfx::Rect bounds = m_rwhv->GetViewBounds();
+    return gfx::PointF(bounds.width() / 2.0f, bounds.height() / 2.0f);
+}
+
 void SmoothScrollController::sendGestureScrollBegin()
 {
     auto *host = m_rwhv->host();
     if (!host)
         return;
 
-    gfx::Rect bounds = m_rwhv->GetViewBounds();
-    gfx::PointF center(bounds.width() / 2.0f, bounds.height() / 2.0f);
+    gfx::PointF pos = hitTestPosition();
 
     blink::WebGestureEvent event(
         blink::WebInputEvent::Type::kGestureScrollBegin,
         blink::WebInputEvent::kNoModifiers,
         base::TimeTicks::Now());
     event.SetSourceDevice(blink::WebGestureDevice::kTouchpad);
-    event.SetPositionInWidget(center);
+    event.SetPositionInWidget(pos);
     event.data.scroll_begin.delta_x_hint = 0;
     event.data.scroll_begin.delta_y_hint = 0;
 
@@ -134,15 +143,14 @@ void SmoothScrollController::sendGestureScrollUpdate(int stepX, int stepY)
     if (!host)
         return;
 
-    gfx::Rect bounds = m_rwhv->GetViewBounds();
-    gfx::PointF center(bounds.width() / 2.0f, bounds.height() / 2.0f);
+    gfx::PointF pos = hitTestPosition();
 
     blink::WebGestureEvent event(
         blink::WebInputEvent::Type::kGestureScrollUpdate,
         blink::WebInputEvent::kNoModifiers,
         base::TimeTicks::Now());
     event.SetSourceDevice(blink::WebGestureDevice::kTouchpad);
-    event.SetPositionInWidget(center);
+    event.SetPositionInWidget(pos);
     event.data.scroll_update.delta_x = static_cast<float>(-stepX);
     event.data.scroll_update.delta_y = static_cast<float>(-stepY);
 
@@ -155,15 +163,14 @@ void SmoothScrollController::sendGestureScrollEnd()
     if (!host)
         return;
 
-    gfx::Rect bounds = m_rwhv->GetViewBounds();
-    gfx::PointF center(bounds.width() / 2.0f, bounds.height() / 2.0f);
+    gfx::PointF pos = hitTestPosition();
 
     blink::WebGestureEvent event(
         blink::WebInputEvent::Type::kGestureScrollEnd,
         blink::WebInputEvent::kNoModifiers,
         base::TimeTicks::Now());
     event.SetSourceDevice(blink::WebGestureDevice::kTouchpad);
-    event.SetPositionInWidget(center);
+    event.SetPositionInWidget(pos);
 
     host->ForwardGestureEvent(event);
 }

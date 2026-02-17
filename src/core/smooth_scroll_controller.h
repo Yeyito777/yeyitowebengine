@@ -8,6 +8,8 @@
 #include <QObject>
 #include <QTimer>
 
+#include "ui/gfx/geometry/point_f.h"
+
 namespace QtWebEngineCore {
 
 class RenderWidgetHostViewQt;
@@ -19,13 +21,14 @@ public:
     explicit SmoothScrollController(RenderWidgetHostViewQt *rwhv, QObject *parent = nullptr);
     ~SmoothScrollController();
 
-    void scrollBy(int dx, int dy, double factor);
+    void scrollBy(int dx, int dy, double factor, int posX = -1, int posY = -1);
     void stop();
 
 private Q_SLOTS:
     void tick();
 
 private:
+    gfx::PointF hitTestPosition();
     void sendGestureScrollBegin();
     void sendGestureScrollUpdate(int stepX, int stepY);
     void sendGestureScrollEnd();
@@ -38,6 +41,8 @@ private:
     double m_subPixelX = 0.0;
     double m_subPixelY = 0.0;
     double m_factor = 0.3;
+    int m_posX = -1;
+    int m_posY = -1;
     bool m_scrolling = false;
 };
 
