@@ -133,6 +133,10 @@ void SmoothScrollController::sendGestureScrollBegin()
     event.SetPositionInWidget(pos);
     event.data.scroll_begin.delta_x_hint = 0;
     event.data.scroll_begin.delta_y_hint = 0;
+    // When no specific element position was given (posX/posY == -1),
+    // target the viewport directly to avoid hit-testing into a child
+    // scrollable element that happens to be under the viewport center.
+    event.data.scroll_begin.target_viewport = (m_posX < 0 && m_posY < 0);
 
     host->ForwardGestureEvent(event);
 }
