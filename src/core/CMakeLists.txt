@@ -532,6 +532,10 @@ foreach(arch ${archs})
                 CONDITION QT_FEATURE_webengine_system_pulseaudio
             )
             extend_gn_list(gnArgArg
+                ARGS link_pulseaudio
+                CONDITION QT_FEATURE_webengine_system_pulseaudio
+            )
+            extend_gn_list(gnArgArg
                 ARGS use_system_minigbm
                 CONDITION QT_FEATURE_webengine_system_gbm
             )
