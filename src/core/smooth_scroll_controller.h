@@ -29,7 +29,7 @@ private Q_SLOTS:
 
 private:
     gfx::PointF hitTestPosition();
-    void sendGestureScrollBegin();
+    void sendGestureScrollBegin(float deltaXHint, float deltaYHint);
     void sendGestureScrollUpdate(int stepX, int stepY);
     void sendGestureScrollEnd();
 

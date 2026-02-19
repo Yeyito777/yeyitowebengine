@@ -47,7 +47,7 @@ void SmoothScrollController::scrollBy(int dx, int dy, double factor, int posX, i
         m_posY = posY;
         m_subPixelX = 0.0;
         m_subPixelY = 0.0;
-        sendGestureScrollBegin();
+        sendGestureScrollBegin(static_cast<float>(-dx), static_cast<float>(-dy));
         m_scrolling = true;
         m_elapsed.start();
         m_timer.start();
@@ -117,7 +117,7 @@ gfx::PointF SmoothScrollController::hitTestPosition()
     return gfx::PointF(bounds.width() / 2.0f, bounds.height() / 2.0f);
 }
 
-void SmoothScrollController::sendGestureScrollBegin()
+void SmoothScrollController::sendGestureScrollBegin(float deltaXHint, float deltaYHint)
 {
     auto *host = m_rwhv->host();
     if (!host)
@@ -131,8 +131,13 @@ void SmoothScrollController::sendGestureScrollBegin()
         base::TimeTicks::Now());
     event.SetSourceDevice(blink::WebGestureDevice::kTouchpad);
     event.SetPositionInWidget(pos);
-    event.data.scroll_begin.delta_x_hint = 0;
-    event.data.scroll_begin.delta_y_hint = 0;
+    // Provide direction hints so the compositor can latch to a scroll
+    // node that can actually consume delta in the intended direction.
+    // Without these, CanConsumeDelta() treats zero hints as "any node
+    // matches" and may latch to a horizontally-scrollable child that
+    // can't scroll vertically (e.g. a code block with overflow:auto).
+    event.data.scroll_begin.delta_x_hint = deltaXHint;
+    event.data.scroll_begin.delta_y_hint = deltaYHint;
     // When no specific element position was given (posX/posY == -1),
     // target the viewport directly to avoid hit-testing into a child
     // scrollable element that happens to be under the viewport center.
