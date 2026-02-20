@@ -1034,6 +1034,11 @@ void WebContentsDelegateQt::ResourceLoadComplete(content::RenderFrameHost* rende
         entry.receiveHeadersEndMs = timeDeltaMs(base_time, timing.receive_headers_end);
     }
 
+    // Request headers
+    for (const auto &[key, value] : resource_load_info.request_headers) {
+        entry.requestHeaders[QString::fromStdString(key)] = QString::fromStdString(value);
+    }
+
     m_networkBuffer.addEntry(std::move(entry));
 }
 

@@ -41,6 +41,9 @@ QJsonObject NetworkRequestEntry::toDetailJson() const
     if (!remoteEndpoint.isEmpty())
         obj[QLatin1String("remoteEndpoint")] = remoteEndpoint;
 
+    if (!requestHeaders.isEmpty())
+        obj[QLatin1String("requestHeaders")] = requestHeaders;
+
     QJsonObject timing;
     timing[QLatin1String("dnsStartMs")] = dnsStartMs;
     timing[QLatin1String("dnsEndMs")] = dnsEndMs;

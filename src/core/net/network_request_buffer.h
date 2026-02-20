@@ -41,6 +41,9 @@ struct NetworkRequestEntry {
     // Remote endpoint
     QString remoteEndpoint;
 
+    // Request headers (name → value)
+    QJsonObject requestHeaders;
+
     QJsonObject toSummaryJson() const;
     QJsonObject toDetailJson() const;
 };
