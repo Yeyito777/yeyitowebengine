@@ -23,6 +23,7 @@
 #include "renderer_host/web_engine_page_host.h"
 #include "render_widget_host_view_qt.h"
 #include "type_conversion.h"
+#include "web_contents_delegate_qt.h"
 #include "web_contents_view_qt.h"
 #include "web_engine_context.h"
 #include "web_engine_settings.h"
@@ -65,6 +66,8 @@
 #include "ui/native_theme/native_theme.h"
 #include "qtwebengine/browser/qtwebenginepage.mojom.h"
 
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
 #include <QtCore/QVariant>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QMimeData>
@@ -1103,6 +1106,40 @@ void WebContentsAdapter::notifyUserActivation(quint64 frameId)
         return;
     rfh->NotifyUserActivation(
         blink::mojom::UserActivationNotificationType::kInteraction);
+}
+
+QString WebContentsAdapter::networkQuery(const QString &queryType, const QString &argsJson) const
+{
+    if (!m_webContentsDelegate) {
+        return QStringLiteral("{\"error\":\"not initialized\"}");
+    }
+
+    auto &buffer = const_cast<WebContentsDelegateQt *>(m_webContentsDelegate.get())->networkBuffer();
+
+    if (queryType == QLatin1String("list")) {
+        return buffer.queryList();
+    } else if (queryType == QLatin1String("detail")) {
+        QJsonDocument doc = QJsonDocument::fromJson(argsJson.toUtf8());
+        int64_t requestId = 0;
+        if (doc.isObject()) {
+            QJsonValue val = doc.object().value(QLatin1String("request_id"));
+            if (val.isDouble())
+                requestId = static_cast<int64_t>(val.toDouble());
+            else if (val.isString())
+                requestId = val.toString().toLongLong();
+        }
+        return buffer.queryDetail(requestId);
+    } else if (queryType == QLatin1String("body")) {
+        return QStringLiteral("{\"error\":\"body query requires DevTools bridge (not yet implemented)\"}");
+    } else if (queryType == QLatin1String("ws") || queryType == QLatin1String("ws_frames")) {
+        return QStringLiteral("{\"error\":\"WebSocket frame query requires DevTools bridge (not yet implemented)\"}");
+    } else if (queryType == QLatin1String("headers")) {
+        return QStringLiteral("{\"error\":\"headers query requires DevTools bridge (not yet implemented)\"}");
+    } else if (queryType == QLatin1String("cookies")) {
+        return QStringLiteral("{\"error\":\"cookies query requires DevTools bridge (not yet implemented)\"}");
+    }
+
+    return QStringLiteral("{\"error\":\"unknown query type\"}");
 }
 
 void WebContentsAdapter::smoothScrollBy(int dx, int dy, double factor, int posX, int posY)

@@ -52,6 +52,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/data_url.h"
 #include "net/base/url_util.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 #include <QDesktopServices>
@@ -479,6 +480,8 @@ void WebContentsDelegateQt::DidFinishNavigation(content::NavigationHandle *navig
 
 void WebContentsDelegateQt::PrimaryPageChanged(content::Page &)
 {
+    m_networkBuffer.clear();
+
     // Based on TabLoadTracker::PrimaryPageChanged
 
     if (!web_contents()->ShouldShowLoadingUI())
@@ -936,6 +939,54 @@ bool WebContentsDelegateQt::IsBackForwardCacheSupported(content::WebContents &we
     return webEngineSettings()->testAttribute(QWebEngineSettings::BackForwardCacheEnabled);
 }
 
+static QString requestDestinationToType(network::mojom::RequestDestination dest)
+{
+    switch (dest) {
+    case network::mojom::RequestDestination::kDocument:
+        return QStringLiteral("document");
+    case network::mojom::RequestDestination::kFrame:
+    case network::mojom::RequestDestination::kIframe:
+        return QStringLiteral("frame");
+    case network::mojom::RequestDestination::kImage:
+        return QStringLiteral("image");
+    case network::mojom::RequestDestination::kScript:
+        return QStringLiteral("script");
+    case network::mojom::RequestDestination::kStyle:
+        return QStringLiteral("stylesheet");
+    case network::mojom::RequestDestination::kFont:
+        return QStringLiteral("font");
+    case network::mojom::RequestDestination::kAudio:
+    case network::mojom::RequestDestination::kVideo:
+        return QStringLiteral("media");
+    case network::mojom::RequestDestination::kTrack:
+        return QStringLiteral("track");
+    case network::mojom::RequestDestination::kManifest:
+        return QStringLiteral("manifest");
+    case network::mojom::RequestDestination::kWorker:
+    case network::mojom::RequestDestination::kSharedWorker:
+    case network::mojom::RequestDestination::kServiceWorker:
+        return QStringLiteral("worker");
+    case network::mojom::RequestDestination::kEmpty:
+        return QStringLiteral("fetch");
+    case network::mojom::RequestDestination::kObject:
+    case network::mojom::RequestDestination::kEmbed:
+        return QStringLiteral("object");
+    case network::mojom::RequestDestination::kReport:
+        return QStringLiteral("report");
+    case network::mojom::RequestDestination::kXslt:
+        return QStringLiteral("xslt");
+    default:
+        return QStringLiteral("other");
+    }
+}
+
+static double timeDeltaMs(base::TimeTicks start, base::TimeTicks end)
+{
+    if (start.is_null() || end.is_null())
+        return 0;
+    return (end - start).InMillisecondsF();
+}
+
 void WebContentsDelegateQt::ResourceLoadComplete(content::RenderFrameHost* render_frame_host,
                                                  const content::GlobalRequestID& request_id,
                                                  const blink::mojom::ResourceLoadInfo& resource_load_info)
@@ -946,6 +997,44 @@ void WebContentsDelegateQt::ResourceLoadComplete(content::RenderFrameHost* rende
     if (resource_load_info.request_destination == network::mojom::RequestDestination::kDocument) {
         m_isDocumentEmpty = (resource_load_info.raw_body_bytes == 0);
     }
+
+    NetworkRequestEntry entry;
+    entry.requestId = resource_load_info.request_id;
+    entry.url = QString::fromStdString(resource_load_info.final_url.spec());
+    entry.originalUrl = QString::fromStdString(resource_load_info.original_url.spec());
+    entry.method = QString::fromStdString(resource_load_info.method);
+    entry.resourceType = requestDestinationToType(resource_load_info.request_destination);
+    entry.mimeType = QString::fromStdString(resource_load_info.mime_type);
+    entry.httpStatusCode = resource_load_info.http_status_code;
+    entry.netError = resource_load_info.net_error;
+    entry.wasCached = resource_load_info.was_cached;
+    entry.rawBodyBytes = resource_load_info.raw_body_bytes;
+    entry.totalReceivedBytes = resource_load_info.total_received_bytes;
+
+    // Remote endpoint
+    if (resource_load_info.network_info && resource_load_info.network_info->remote_endpoint.has_value()) {
+        entry.remoteEndpoint = QString::fromStdString(
+            resource_load_info.network_info->remote_endpoint->ToString());
+    }
+
+    // Timing deltas relative to request_start
+    const auto &timing = resource_load_info.load_timing_info;
+    base::TimeTicks base_time = timing.request_start;
+    if (!base_time.is_null()) {
+        const auto &ct = timing.connect_timing;
+        entry.dnsStartMs = timeDeltaMs(base_time, ct.domain_lookup_start);
+        entry.dnsEndMs = timeDeltaMs(base_time, ct.domain_lookup_end);
+        entry.connectStartMs = timeDeltaMs(base_time, ct.connect_start);
+        entry.connectEndMs = timeDeltaMs(base_time, ct.connect_end);
+        entry.sslStartMs = timeDeltaMs(base_time, ct.ssl_start);
+        entry.sslEndMs = timeDeltaMs(base_time, ct.ssl_end);
+        entry.sendStartMs = timeDeltaMs(base_time, timing.send_start);
+        entry.sendEndMs = timeDeltaMs(base_time, timing.send_end);
+        entry.receiveHeadersStartMs = timeDeltaMs(base_time, timing.receive_headers_start);
+        entry.receiveHeadersEndMs = timeDeltaMs(base_time, timing.receive_headers_end);
+    }
+
+    m_networkBuffer.addEntry(std::move(entry));
 }
 
 void WebContentsDelegateQt::InnerWebContentsAttached(content::WebContents *inner_web_contents,

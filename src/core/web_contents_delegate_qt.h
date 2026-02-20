@@ -9,6 +9,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+#include "net/network_request_buffer.h"
 #include "web_contents_adapter_client.h"
 
 #include <QtCore/qlist.h>
@@ -149,6 +150,8 @@ public:
     void launchExternalURL(const QUrl &url, ui::PageTransition page_transition, bool is_main_frame, bool has_user_gesture);
     FindTextHelper *findTextHelper();
 
+    NetworkRequestBuffer &networkBuffer() { return m_networkBuffer; }
+
     void setSavePageInfo(SavePageInfo *spi) { m_savePageInfo.reset(spi); }
     SavePageInfo *savePageInfo() { return m_savePageInfo.get(); }
 
@@ -217,6 +220,7 @@ private:
     } m_loadingInfo;
 
     bool m_isDocumentEmpty = true;
+    NetworkRequestBuffer m_networkBuffer;
     base::WeakPtrFactory<WebContentsDelegateQt> m_weakPtrFactory { this };
     QList<QWeakPointer<CertificateErrorController>> m_certificateErrorControllers;
 };

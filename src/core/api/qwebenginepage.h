@@ -289,6 +289,7 @@ public:
     void runJavaScript(const QString &scriptSource, const std::function<void(const QVariant &)> &resultCallback);
     void runJavaScript(const QString &scriptSource, quint32 worldId = 0, const std::function<void(const QVariant &)> &resultCallback = {});
     void notifyUserActivation();
+    QString networkQuery(const QString &queryType, const QString &argsJson = QString()) const;
     void smoothScrollBy(int dx, int dy, double factor, int posX = -1, int posY = -1);
     QWebEngineScriptCollection &scripts();
     QWebEngineSettings *settings() const;

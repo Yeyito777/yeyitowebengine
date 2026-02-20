@@ -145,6 +145,7 @@ public:
     void runJavaScript(const QString &javaScript, quint32 worldId, quint64 frameId,
                        const std::function<void(const QVariant &)> &callback);
     void notifyUserActivation(quint64 frameId);
+    QString networkQuery(const QString &queryType, const QString &argsJson = QString()) const;
     void smoothScrollBy(int dx, int dy, double factor, int posX = -1, int posY = -1);
     void didRunJavaScript(quint64 requestId, const base::Value &result);
     void clearJavaScriptCallbacks();

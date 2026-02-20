@@ -2086,6 +2086,14 @@ void QWebEnginePage::notifyUserActivation()
     d->adapter->notifyUserActivation(WebContentsAdapter::kUseMainFrameId);
 }
 
+QString QWebEnginePage::networkQuery(const QString &queryType, const QString &argsJson) const
+{
+    Q_D(const QWebEnginePage);
+    if (!d->adapter)
+        return QStringLiteral("{\"error\":\"not initialized\"}");
+    return d->adapter->networkQuery(queryType, argsJson);
+}
+
 void QWebEnginePage::smoothScrollBy(int dx, int dy, double factor, int posX, int posY)
 {
     Q_D(QWebEnginePage);
