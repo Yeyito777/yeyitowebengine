@@ -220,6 +220,7 @@ private:
     } m_loadingInfo;
 
     bool m_isDocumentEmpty = true;
+    QJsonObject m_pendingNavRequestHeaders;
     NetworkRequestBuffer m_networkBuffer;
     base::WeakPtrFactory<WebContentsDelegateQt> m_weakPtrFactory { this };
     QList<QWeakPointer<CertificateErrorController>> m_certificateErrorControllers;

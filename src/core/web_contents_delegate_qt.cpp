@@ -52,6 +52,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/data_url.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -441,6 +442,15 @@ void WebContentsDelegateQt::DidFinishNavigation(content::NavigationHandle *navig
         }
 
         emitLoadCommitted();
+    }
+
+    // Capture request headers for the document navigation (browser-side only)
+    if (navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage()) {
+        m_pendingNavRequestHeaders = QJsonObject();
+        const net::HttpRequestHeaders &reqHeaders = navigation_handle->GetRequestHeaders();
+        net::HttpRequestHeaders::Iterator it(reqHeaders);
+        while (it.GetNext())
+            m_pendingNavRequestHeaders[QString::fromStdString(it.name())] = QString::fromStdString(it.value());
     }
 
     const net::HttpResponseHeaders * const responseHeaders = navigation_handle->GetResponseHeaders();
@@ -1034,9 +1044,14 @@ void WebContentsDelegateQt::ResourceLoadComplete(content::RenderFrameHost* rende
         entry.receiveHeadersEndMs = timeDeltaMs(base_time, timing.receive_headers_end);
     }
 
-    // Request headers
+    // Request headers (from renderer for sub-resources, from NavigationHandle for documents)
     for (const auto &[key, value] : resource_load_info.request_headers) {
         entry.requestHeaders[QString::fromStdString(key)] = QString::fromStdString(value);
+    }
+    if (entry.requestHeaders.isEmpty() && !m_pendingNavRequestHeaders.isEmpty()
+        && resource_load_info.request_destination == network::mojom::RequestDestination::kDocument) {
+        entry.requestHeaders = std::move(m_pendingNavRequestHeaders);
+        m_pendingNavRequestHeaders = QJsonObject();
     }
 
     m_networkBuffer.addEntry(std::move(entry));
