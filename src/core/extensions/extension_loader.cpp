@@ -14,6 +14,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/file_util.h"
+#include "extensions/common/manifest.h"
 
 using namespace extensions;
 
@@ -75,7 +76,13 @@ void ExtensionLoader::addExtension(scoped_refptr<const Extension> extension)
     if (extensions().Contains(extension->id()))
         m_extensionRegistrar.ReloadExtension(extension->id(),
                                              ExtensionRegistrar::LoadErrorBehavior::kQuiet);
-    else
+    else if (Manifest::IsUnpackedLocation(extension->location())) {
+        // User-loaded extensions: add as enabled and activate directly.
+        // We bypass EnableExtension/AddNewExtension because their blocklist
+        // pref checks crash — QtWebEngine doesn't register those prefs.
+        m_extensionRegistry->AddEnabled(extension);
+        m_extensionRegistrar.ActivateExtension(extension.get(), true);
+    } else
         m_extensionRegistry->AddDisabled(extension);
 }
 
